@@ -538,8 +538,8 @@ Internal,ELECTIONS,Elections Council - Chief Auditor Stipend,ELCT,,$350.00
 Internal,ELECTIONS,Elections Council - Prosecutor Stipend,ELCT,,$300.00 
 Internal,ELECTIONS,Elections Operations,ELCT,,"$6,200.00 "
 Internal,EXTERNAL EXPENDITURES ,Cal Lodge Insurance ,GEN,,"$17,000.00 "
-Internal,EXTERNAL EXPENDITURES ,D&O Insurance,GEN,,"$4,000.00 "
-Internal,EXTERNAL EXPENDITURES ,GL Insurance,GEN,,"$19,000.00 "
+Internal,EXTERNAL EXPENDITURES,D&O Insurance,GEN,,"$4,000.00 "
+Internal,EXTERNAL EXPENDITURES,GL Insurance,GEN,,"$19,000.00 "
 ,,,,,
 ,,,,,
 ,,,,,
