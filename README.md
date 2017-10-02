@@ -8,3 +8,5 @@ Log:
 [9/21 - Jacky] - Added 2017-2018 CSV file of budget.
 
 [9/25 - D'sa] - Processed CSV file for use in Pandas. Started initial plots for budget when grouping by type of club.
+
+[10/2 - D'sa] - Plots for number of years for each club.
