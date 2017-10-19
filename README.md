@@ -12,3 +12,7 @@ Log:
 [10/2 - D'sa] - Plots for number of years for each club.
 
 [10/3 - Jacky] - Fixed plots (bar charts don't show relationship in year vs allocation data). Added table showing allocations in descending order.
+
+[10/18 - Jacky] - Processed PDFs into Pandas.
+
+[10/18 - D'sa] - Visualizations for 2014 PDF.
