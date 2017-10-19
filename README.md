@@ -10,3 +10,5 @@ Log:
 [9/25 - D'sa] - Processed CSV file for use in Pandas. Started initial plots for budget when grouping by type of club.
 
 [10/2 - D'sa] - Plots for number of years for each club.
+
+[10/3 - Jacky] - Fixed plots (bar charts don't show relationship in year vs allocation data). Added table showing allocations in descending order.
