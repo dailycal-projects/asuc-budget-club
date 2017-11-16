@@ -26,7 +26,7 @@
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script>
 
-var margin = {top: 20, right: 30, bottom: 40, left: 30},
+var margin = {top: 20, right: 30, bottom: 40, left: 180},
     width = 960 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
@@ -52,19 +52,28 @@ var svg = d3.select("body").append("svg")
   .append("g")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-d3.tsv("ASUC Data - 2014-2015.csv", type, function(error, data) {
-  x.domain(d3.extent(data, function(d) { return d.value; })).nice();
-  y.domain(data.map(function(d) { return d.name; }));
+d3.csv("ASUC Data - 2014-2015 - Subset.csv", type, function(error, data) {
+	x.domain([d3.min(data, function(d) { return -d['Funding Request']}),
+						d3.max(data, function(d) { return +d['Final Allocation']})]).nice();
 
   svg.selectAll(".bar")
       .data(data)
     .enter().append("rect")
-      .attr("class", function(d) { return "bar bar--" + (d.value < 0 ? "negative" : "positive"); })
-      .attr("x", function(d) { return x(Math.min(0, d.value)); })
-      .attr("y", function(d) { return y(d.name); })
-      .attr("width", function(d) { return Math.abs(x(d.value) - x(0)); })
+      .attr("class", "bar bar--positive")
+      .attr("x", function(d) { return x(0); })
+      .attr("y", function(d) { return y(d.Name); })
+      .attr("width", function(d) { return Math.abs(x(+d['Final Allocation']) - x(0)); })
       .attr("height", y.rangeBand());
-
+/*
+		svg.selectAll(".bar")
+	      .data(data)
+	    .enter().append("rect")
+	      .attr("class", "bar bar--negative")
+	      .attr("x", function(d) { return x(0); })
+	      .attr("y", function(d) { return y(d.Name); })
+	      .attr("width", function(d) { return Math.abs(x(+d['Funding Request']) - x(0)); })
+	      .attr("height", y.rangeBand());
+*/
   svg.append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0," + height + ")")
@@ -77,7 +86,7 @@ d3.tsv("ASUC Data - 2014-2015.csv", type, function(error, data) {
 });
 
 function type(d) {
-  d.value = +d.value;
+  d['Final Allocation'] = d['Final Allocation'];
   return d;
 }
 
