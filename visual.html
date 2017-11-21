@@ -64,29 +64,33 @@ d3.csv("ASUC Data - 2014-2015 - Subset.csv", type, function(error, data) {
   svg.selectAll("body")
       .data(data)
     .enter().append("rect")
+      .attr("class", "bar bar--gray")
+      .attr("x", function(d) { return x(Math.min(+d['Funding Request'], +d['Final Allocation'])); })
+      .attr("y", function(d) { return y(d.Name) + y.rangeBand() / 4; })
+      .attr("width", function(d) { return Math.abs(x(+d['Funding Request']) - x(+d['Final Allocation'])); })
+      .attr("height", y.rangeBand() / 2);
+
+  svg.selectAll("body")
+      .data(data)
+    .enter().append("rect")
       .attr("class", "bar bar--positive")
+      .attr("rx", 3)
+      .attr("ry", 3)
       .attr("x", function(d) { return x(+d['Final Allocation']); })
       .attr("y", function(d) { return y(d.Name); })
-      .attr("width", 10)
+      .attr("width", y.rangeBand() / 2)
       .attr("height", y.rangeBand());
 
   svg.selectAll("body")
       .data(data)
     .enter().append("rect")
       .attr("class", "bar bar--negative")
+      .attr("rx", 3)
+      .attr("ry", 3)
       .attr("x", function(d) { return x(+d['Funding Request']); })
       .attr("y", function(d) { return y(d.Name); })
-      .attr("width", 10)
+      .attr("width", y.rangeBand() / 2)
       .attr("height", y.rangeBand());
-
-  svg.selectAll("body")
-      .data(data)
-    .enter().append("rect")
-      .attr("class", "bar bar--gray")
-      .attr("x", function(d) { return x(Math.min(+d['Funding Request'], +d['Final Allocation'])); })
-      .attr("y", function(d) { return y(d.Name); })
-      .attr("width", function(d) { return Math.abs(x(+d['Funding Request']) - x(+d['Final Allocation'])); })
-      .attr("height", y.rangeBand() / 2);
 
   svg.append("g")
       .attr("class", "x axis")
