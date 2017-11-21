@@ -10,6 +10,10 @@
   fill: darkorange;
 }
 
+.bar--gray {
+  fill: gray;
+}
+
 .axis text {
   font: 10px sans-serif;
 }
@@ -53,27 +57,37 @@ var svg = d3.select("body").append("svg")
     .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
 d3.csv("ASUC Data - 2014-2015 - Subset.csv", type, function(error, data) {
-	x.domain([d3.min(data, function(d) { return -d['Funding Request']}),
-						d3.max(data, function(d) { return +d['Final Allocation']})]).nice();
+	x.domain([d3.min(data, function(d) {return d3.max([+d['Final Allocation'], +d['Funding Request']])}),
+            d3.max(data, function(d) {return d3.max([+d['Final Allocation'], +d['Funding Request']])})]);
+  y.domain(data.map(function(d) {return d.Name}));
 
-  svg.selectAll(".bar")
+  svg.selectAll("body")
       .data(data)
     .enter().append("rect")
       .attr("class", "bar bar--positive")
-      .attr("x", function(d) { return x(0); })
+      .attr("x", function(d) { return x(+d['Final Allocation']); })
       .attr("y", function(d) { return y(d.Name); })
-      .attr("width", function(d) { return Math.abs(x(+d['Final Allocation']) - x(0)); })
+      .attr("width", 10)
       .attr("height", y.rangeBand());
-/*
-		svg.selectAll(".bar")
-	      .data(data)
-	    .enter().append("rect")
-	      .attr("class", "bar bar--negative")
-	      .attr("x", function(d) { return x(0); })
-	      .attr("y", function(d) { return y(d.Name); })
-	      .attr("width", function(d) { return Math.abs(x(+d['Funding Request']) - x(0)); })
-	      .attr("height", y.rangeBand());
-*/
+
+  svg.selectAll("body")
+      .data(data)
+    .enter().append("rect")
+      .attr("class", "bar bar--negative")
+      .attr("x", function(d) { return x(+d['Funding Request']); })
+      .attr("y", function(d) { return y(d.Name); })
+      .attr("width", 10)
+      .attr("height", y.rangeBand());
+
+  svg.selectAll("body")
+      .data(data)
+    .enter().append("rect")
+      .attr("class", "bar bar--gray")
+      .attr("x", function(d) { return x(Math.min(+d['Funding Request'], +d['Final Allocation'])); })
+      .attr("y", function(d) { return y(d.Name); })
+      .attr("width", function(d) { return Math.abs(x(+d['Funding Request']) - x(+d['Final Allocation'])); })
+      .attr("height", y.rangeBand() / 2);
+
   svg.append("g")
       .attr("class", "x axis")
       .attr("transform", "translate(0," + height + ")")
