@@ -1,6 +1,5 @@
 <!DOCTYPE html>
 <meta charset="utf-8">
-<script src="http://d3js.org/d3.v3.min.js"></script>
 <style>
   .bar--positive {
     fill: steelblue;
@@ -35,15 +34,54 @@
   }
 
 </style>
+<script src="http://d3js.org/d3.v3.min.js"></script>
+<script>
+  function generateClubList() {
+    var ul = document.getElementById("clubList");
+
+    d3.csv("ASUC Data - 2014-2015 - Subset.csv", function(error, data) {
+      for (i = 0; i < data.length; i++) {
+        d = data[i];
+
+        var li = document.createElement("li");
+        var a = document.createElement("a");
+        a.innerHTML = d.Name;
+        a.href = "#" + d.Name;
+        
+        li.appendChild(a);
+        li.setAttribute("id", "club-" + d.Name);
+        ul.appendChild(li);
+      }
+    })
+  }
+
+  function filterSelection() {
+    var userInput, filter, ul, li, a, i;
+
+    userInput = document.getElementById('filterInput');
+    filter = userInput.value.toUpperCase();
+    ul = document.getElementById("clubList");
+    li = ul.getElementsByTagName("li");
+
+    for (i = 0; i < li.length; i++) {
+      a = li[i].getElementsByTagName("a")[0];
+      if (a.innerHTML.toUpperCase().indexOf(filter) > -1) {
+        li[i].style.display = "";
+      } else {
+        li[i].style.display = "none";
+      }
+    }
+  }
+</script>
 <body>
   <table>
     <tr>
       <td>
         <input type="text" id="filterInput" onkeyup="filterSelection()" placeholder="Search for a club"></input>
-        <ul>
-          <li>1</li>
-          <li>2</li>
-          <li>3</li>
+        <ul id="clubList">
+          <script>
+            generateClubList();
+          </script>
         </ul>
       </td>
 
@@ -75,7 +113,7 @@
             .append("g")
               .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
-          d3.csv("ASUC Data - 2014-2015 - Subset.csv", type, function(error, data) {
+          d3.csv("ASUC Data - 2014-2015 - Subset.csv", function(error, data) {
           	x.domain([d3.min(data, function(d) {return d3.max([+d['Final Allocation'], +d['Funding Request']])}),
                       d3.max(data, function(d) {return d3.max([+d['Final Allocation'], +d['Funding Request']])})]);
             y.domain(data.map(function(d) {return d.Name}));
@@ -121,11 +159,6 @@
                 .attr("transform", "translate(" + x(0) + ",0)")
                 .call(yAxis);
           });
-
-          function type(d) {
-            d['Final Allocation'] = d['Final Allocation'];
-            return d;
-          }
         </script>
       </td>
     </tr>
