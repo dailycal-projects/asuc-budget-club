@@ -24,6 +24,12 @@
     shape-rendering: crispEdges;
   }
 
+  .pane {
+    display: block;
+    height: 500px;
+    overflow: scroll;
+  }
+
   table {
     border: 1px solid #ddd;
   }
@@ -33,13 +39,19 @@
     vertical-align: top;
   }
 
+  #clubList {
+    height: 500px;
+    overflow: scroll;
+    border: 1px solid #ddd;
+    vertical-align: top;
+  }
 </style>
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script>
   function generateClubList() {
     var ul = document.getElementById("clubList");
 
-    d3.csv("ASUC Data - 2014-2015 - Subset.csv", function(error, data) {
+    d3.csv("ASUC Data - 2014-2015.csv", function(error, data) {
       for (i = 0; i < data.length; i++) {
         d = data[i];
 
@@ -47,7 +59,7 @@
         var a = document.createElement("a");
         a.innerHTML = d.Name;
         a.href = "#" + d.Name;
-        
+
         li.appendChild(a);
         li.setAttribute("id", "club-" + d.Name);
         ul.appendChild(li);
@@ -74,93 +86,95 @@
   }
 </script>
 <body>
-  <table>
-    <tr>
-      <td>
-        <input type="text" id="filterInput" onkeyup="filterSelection()" placeholder="Search for a club"></input>
-        <ul id="clubList">
+  <div class="pane">
+    <table>
+      <tr>
+        <td>
+          <input type="text" id="filterInput" onkeyup="filterSelection()" placeholder="Search for a club"></input>
+          <ul id="clubList">
+            <script>
+              generateClubList();
+            </script>
+          </ul>
+        </td>
+
+        <td class="svgHolder">
           <script>
-            generateClubList();
+            var margin = {top: 20, right: 30, bottom: 40, left: 180},
+                width = 1000 - margin.left - margin.right,
+                height = 500 - margin.top - margin.bottom;
+
+            var x = d3.scale.linear()
+                .range([0, width]);
+
+            var y = d3.scale.ordinal()
+                .rangeRoundBands([0, height], 0.1);
+
+            var xAxis = d3.svg.axis()
+                .scale(x)
+                .orient("top");
+
+            var yAxis = d3.svg.axis()
+                .scale(y)
+                .orient("left")
+                .tickSize(0)
+                .tickPadding(6);
+
+            var svg = d3.select(".svgHolder").append("svg")
+                .attr("width", width + margin.left + margin.right)
+                .attr("height", height + margin.top + margin.bottom)
+              .append("g")
+                .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+            d3.csv("ASUC Data - 2014-2015 - Subset.csv", function(error, data) {
+            	x.domain([d3.min(data, function(d) {return d3.max([+d['Final Allocation'], +d['Funding Request']])}),
+                        d3.max(data, function(d) {return d3.max([+d['Final Allocation'], +d['Funding Request']])})]);
+              y.domain(data.map(function(d) {return d.Name}));
+
+              svg.selectAll("svg")
+                  .data(data)
+                .enter().append("rect")
+                  .attr("class", "bar bar--gray")
+                  .attr("x", function(d) { return x(Math.min(+d['Funding Request'], +d['Final Allocation'])) - y.rangeBand() / 4; })
+                  .attr("y", function(d) { return y(d.Name) + y.rangeBand() / 4; })
+                  .attr("width", function(d) { return Math.abs(x(+d['Funding Request']) - x(+d['Final Allocation'])); })
+                  .attr("height", y.rangeBand() / 2);
+
+              svg.selectAll("svg")
+                  .data(data)
+                .enter().append("rect")
+                  .attr("class", "bar bar--positive")
+                  .attr("rx", 3)
+                  .attr("ry", 3)
+                  .attr("x", function(d) { return x(+d['Final Allocation']) - y.rangeBand() / 4; })
+                  .attr("y", function(d) { return y(d.Name); })
+                  .attr("width", y.rangeBand() / 2)
+                  .attr("height", y.rangeBand());
+
+              svg.selectAll("svg")
+                  .data(data)
+                .enter().append("rect")
+                  .attr("class", "bar bar--negative")
+                  .attr("rx", 3)
+                  .attr("ry", 3)
+                  .attr("x", function(d) { return x(+d['Funding Request']) - y.rangeBand() / 4; })
+                  .attr("y", function(d) { return y(d.Name); })
+                  .attr("width", y.rangeBand() / 2)
+                  .attr("height", y.rangeBand());
+
+              svg.append("g")
+                  .attr("class", "x axis")
+                  .attr("transform", "translate(0, 0)")
+                  .call(xAxis);
+
+              svg.append("g")
+                  .attr("class", "y axis")
+                  .attr("transform", "translate(" + x(0) + ",0)")
+                  .call(yAxis);
+            });
           </script>
-        </ul>
-      </td>
-
-      <td class="svgHolder">
-        <script>
-          var margin = {top: 20, right: 30, bottom: 40, left: 180},
-              width = 1000 - margin.left - margin.right,
-              height = 500 - margin.top - margin.bottom;
-
-          var x = d3.scale.linear()
-              .range([0, width]);
-
-          var y = d3.scale.ordinal()
-              .rangeRoundBands([0, height], 0.1);
-
-          var xAxis = d3.svg.axis()
-              .scale(x)
-              .orient("top");
-
-          var yAxis = d3.svg.axis()
-              .scale(y)
-              .orient("left")
-              .tickSize(0)
-              .tickPadding(6);
-
-          var svg = d3.select(".svgHolder").append("svg")
-              .attr("width", width + margin.left + margin.right)
-              .attr("height", height + margin.top + margin.bottom)
-            .append("g")
-              .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-
-          d3.csv("ASUC Data - 2014-2015 - Subset.csv", function(error, data) {
-          	x.domain([d3.min(data, function(d) {return d3.max([+d['Final Allocation'], +d['Funding Request']])}),
-                      d3.max(data, function(d) {return d3.max([+d['Final Allocation'], +d['Funding Request']])})]);
-            y.domain(data.map(function(d) {return d.Name}));
-
-            svg.selectAll("svg")
-                .data(data)
-              .enter().append("rect")
-                .attr("class", "bar bar--gray")
-                .attr("x", function(d) { return x(Math.min(+d['Funding Request'], +d['Final Allocation'])) - y.rangeBand() / 4; })
-                .attr("y", function(d) { return y(d.Name) + y.rangeBand() / 4; })
-                .attr("width", function(d) { return Math.abs(x(+d['Funding Request']) - x(+d['Final Allocation'])); })
-                .attr("height", y.rangeBand() / 2);
-
-            svg.selectAll("svg")
-                .data(data)
-              .enter().append("rect")
-                .attr("class", "bar bar--positive")
-                .attr("rx", 3)
-                .attr("ry", 3)
-                .attr("x", function(d) { return x(+d['Final Allocation']) - y.rangeBand() / 4; })
-                .attr("y", function(d) { return y(d.Name); })
-                .attr("width", y.rangeBand() / 2)
-                .attr("height", y.rangeBand());
-
-            svg.selectAll("svg")
-                .data(data)
-              .enter().append("rect")
-                .attr("class", "bar bar--negative")
-                .attr("rx", 3)
-                .attr("ry", 3)
-                .attr("x", function(d) { return x(+d['Funding Request']) - y.rangeBand() / 4; })
-                .attr("y", function(d) { return y(d.Name); })
-                .attr("width", y.rangeBand() / 2)
-                .attr("height", y.rangeBand());
-
-            svg.append("g")
-                .attr("class", "x axis")
-                .attr("transform", "translate(0, 0)")
-                .call(xAxis);
-
-            svg.append("g")
-                .attr("class", "y axis")
-                .attr("transform", "translate(" + x(0) + ",0)")
-                .call(yAxis);
-          });
-        </script>
-      </td>
-    </tr>
-  </table>
+        </td>
+      </tr>
+    </table>
+  </div>
 </body>
