@@ -67,11 +67,9 @@
   }
 
   function addSelection(clubName) {
-    //console.log(clubName);
     sel = getSelection();
     sel.push(clubName);
     setSelection(sel);
-    //console.log(selection);
     generateSVG(selection);
   }
 
@@ -148,11 +146,7 @@
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     d3.csv("ASUC Data - 2014-2015.csv", function(error, data) {
-      //console.log(selection);
-      //console.log(data);
       data = data.filter(function (d) { return (selection.includes(d.Name))});
-
-      console.log(data);
 
       height = data.length * 50 - margin.top - margin.bottom;
       y = d3.scale.ordinal()
