@@ -93,10 +93,16 @@
     }
   }
 
-  function generateSVG() {
+  function generateSVG(selection) {
+    /*
+    function filter(selection, d) {
+      if (d.Name in selection) return "hidden";
+    }
+    */
+
     var margin = {top: 20, right: 30, bottom: 40, left: 180},
         width = 1000 - margin.left - margin.right,
-        height = 10000 - margin.top - margin.bottom;
+        height = 1000 - margin.top - margin.bottom;
 
     var x = d3.scale.linear()
         .range([0, width]);
@@ -121,7 +127,23 @@
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     d3.csv("ASUC Data - 2014-2015.csv", function(error, data) {
-      x.domain([d3.min(data, function(d) {return d3.max([+d['Final Allocation'], +d['Funding Request']])}),
+      console.log(selection);
+      console.log(data);
+      data = data.filter(function (d) { return (selection.includes(d.Name))});
+
+      console.log(data);
+
+      height = data.length * 50 - margin.top - margin.bottom;
+      y = d3.scale.ordinal()
+          .rangeRoundBands([0, height], 0.1);
+
+      yAxis = d3.svg.axis()
+          .scale(y)
+          .orient("left")
+          .tickSize(0)
+          .tickPadding(6);
+
+      x.domain([d3.min(data, function(d) {return d3.min([+d['Final Allocation'], +d['Funding Request']])}),
                 d3.max(data, function(d) {return d3.max([+d['Final Allocation'], +d['Funding Request']])})]);
       y.domain(data.map(function(d) {return d.Name}));
 
@@ -184,9 +206,9 @@
         <td>
           <div class="svgHolder">
             <script>
-              var selection = [];
+              var selection = ['Berkeley Fiction Review', 'Berkeley Poetry Review', 'CalTV', 'Folio', 'Alpha Kappa Psi'];
 
-              generateSVG();
+              generateSVG(selection);
             </script>
           </div>
         </td>
