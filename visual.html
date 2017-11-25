@@ -150,7 +150,7 @@
       svg.selectAll("svg")
           .data(data)
         .enter().append("rect")
-          .attr("class", function(d) { return "bar bar--diff-" + (d > 0 ? "positive" : "negative")})
+          .attr("class", function(d) { return "bar bar--diff-" + ((+d['Final Allocation'] - +d['Funding Request']) > 0 ? "positive" : "negative")})
           .attr("x", function(d) { return x(Math.min(+d['Funding Request'], +d['Final Allocation'])) - y.rangeBand() / 4; })
           .attr("y", function(d) { return y(d.Name) + y.rangeBand() / 4; })
           .attr("width", function(d) { return Math.abs(x(+d['Funding Request']) - x(+d['Final Allocation'])); })
