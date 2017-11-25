@@ -56,6 +56,25 @@
 </style>
 <script src="http://d3js.org/d3.v3.min.js"></script>
 <script>
+  var selection = [];
+
+  function getSelection() {
+    return selection;
+  }
+
+  function setSelection(newSelection) {
+    selection = newSelection;
+  }
+
+  function addSelection(clubName) {
+    //console.log(clubName);
+    sel = getSelection();
+    sel.push(clubName);
+    setSelection(sel);
+    //console.log(selection);
+    generateSVG(selection);
+  }
+
   function generateClubList() {
     var ul = document.getElementById("clubList");
 
@@ -66,7 +85,8 @@
         var li = document.createElement("li");
         var a = document.createElement("a");
         a.innerHTML = d.Name;
-        a.href = "#" + d.Name;
+        a.href = "#";
+        a.setAttribute("onclick", "addSelection(\"" + d.Name + "\")");
 
         li.appendChild(a);
         li.setAttribute("id", "club-" + d.Name);
@@ -120,6 +140,7 @@
         .tickSize(0)
         .tickPadding(6);
 
+    d3.select("svg").remove();
     var svg = d3.select(".svgHolder").append("svg")
         .attr("width", width + margin.left + margin.right)
         .attr("height", height + margin.top + margin.bottom)
@@ -127,8 +148,8 @@
         .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
 
     d3.csv("ASUC Data - 2014-2015.csv", function(error, data) {
-      console.log(selection);
-      console.log(data);
+      //console.log(selection);
+      //console.log(data);
       data = data.filter(function (d) { return (selection.includes(d.Name))});
 
       console.log(data);
@@ -206,9 +227,7 @@
         <td>
           <div class="svgHolder">
             <script>
-              var selection = ['Berkeley Fiction Review', 'Berkeley Poetry Review', 'CalTV', 'Folio', 'Alpha Kappa Psi'];
-
-              generateSVG(selection);
+              addSelection('Berkeley Fiction Review');
             </script>
           </div>
         </td>
